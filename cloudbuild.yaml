@@ -26,7 +26,7 @@ steps:
   args:
   - '-c'
   - |
-     cd Pf-demo \
+     cd Pf-demo && \
      sed "s#pingidentity/pingfederate:edge#gcr.io/$PROJECT_ID/sample-httpd:$SHORT_SHA#g" k8s/PF-site1-sample_vitalii.yaml k8s/PF-site2-sample_vitalii.yaml
 
 # This step pushes the manifest back to hello-cloudbuild-env
