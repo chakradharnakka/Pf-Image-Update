@@ -6,6 +6,7 @@ steps:
   args:
   - 'push'
   - 'gcr.io/$PROJECT_ID/sample-httpd:$SHORT_SHA'
+  
 #retrieve key
 - name: 'gcr.io/cloud-builders/gcloud'
   id: retrieve-read-key
