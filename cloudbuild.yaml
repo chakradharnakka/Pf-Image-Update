@@ -6,3 +6,39 @@ steps:
   args:
   - 'push'
   - 'gcr.io/$PROJECT_ID/sample-httpd:$SHORT_SHA'
+  
+  # This step clones the hello-cloudbuild-env repository
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: Clone env repository
+  entrypoint: /bin/sh
+  args:
+  - '-c'
+  - |
+    git clone https://github.com/chakradharnakka/Pf-demo.git && \
+    cd Pf-demo && \
+    git checkout main && \
+    git config user.email $(gcloud auth list --filter=status:ACTIVE --format='value(account)')
+
+# This step generates the new manifest
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: Generate manifest
+  entrypoint: /bin/sh
+  args:
+  - '-c'
+  - |
+     cd Pf-demo \
+     sed "s#pingidentity/pingfederate:edge#gcr.io/$PROJECT_ID/sample-httpd:$SHORT_SHA#g" k8s/PF-site1-sample_vitalii.yaml k8s/PF-site2-sample_vitalii.yaml
+
+# This step pushes the manifest back to hello-cloudbuild-env
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: Push manifest
+  entrypoint: /bin/sh
+  args:
+  - '-c'
+  - |
+    set -x && \
+    cd Pf-demo && \
+    git add k8s/ && \
+    git commit -m "Deploying image gcr.io/${PROJECT_ID}/sample-httpd:${SHORT_SHA}
+    Built from commit ${COMMIT_SHA} of repository PF-demo" && \
+    git push origin main
