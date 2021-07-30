@@ -1,0 +1,6 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '--tag=gcr.io/$PROJECT_ID/sample-httpd:$SHORT_SHA', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['run', 'gcr.io/$PROJECT_ID/sample-httpd:$SHORT_SHA', 'go', 'test']
+images: ['gcr.io/$PROJECT_ID/sample-httpd:$TAG_NAME']
