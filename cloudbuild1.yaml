@@ -1,0 +1,64 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '--tag=gcr.io/$PROJECT_ID/sample-httpd:$SHORT_SHA', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  id: Push
+  args:
+  - 'push'
+  - 'gcr.io/$PROJECT_ID/sample-httpd:$SHORT_SHA'
+  
+#retrieve key
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: retrieve-read-key
+  entrypoint: 'bash'
+  dir: ${_DIR}  
+  args:
+  - '-c'
+  - |
+    gcloud secrets versions access ${_KEY_VERSION} --secret="pf-test-git" --project=${_KEY_PROJECT}  > /root/.ssh/id_rsa;
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+# Set up git with key and domain.
+- name: 'gcr.io/cloud-builders/git'
+  id: add-github-key
+  entrypoint: 'bash'
+  dir: ${_DIR}
+  args:
+  - '-c'
+  - |
+    chmod 600 /root/.ssh/id_rsa
+    cat <<EOF >/root/.ssh/config
+    Hostname github.com
+    IdentityFile /root/.ssh/id_rsa
+    EOF
+    ssh-keyscan -t rsa github.com > /root/.ssh/known_hosts
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+  
+# This step clones the repository
+- name: 'gcr.io/cloud-builders/git'
+  id: Clone env repository
+  entrypoint: /bin/sh
+  args:
+  - '-c'
+  - |
+    git clone git@github.com:chakradharnakka/Pf-demo.git && \
+    git checkout main && \
+    ls 
+    cd Pf-demo && \
+    sed -i "s#pingidentity/pingfederate:edge#gcr.io/$PROJECT_ID/sample-httpd:$SHORT_SHA#g" k8s/PF-site1-sample_vitalii.yaml k8s/PF-site2-sample_vitalii.yaml
+    echo "Pushing changes to git repo ..."
+    git config --global user.email chakradhar.nakka@telus.com && \
+    git config --global user.name "chakradharnakka" && \
+    git add k8s/ && \
+    git status && \
+    git commit -m "Deploying image gcr.io/${PROJECT_ID}/sample-httpd:${SHORT_SHA} Built from commit ${COMMIT_SHA} of repository PF-demo" && \
+    git push
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+substitutions:
+    _KEY_PROJECT: identity-pingfed-lab-ef24f2
+    _KEY_VERSION: "latest"
