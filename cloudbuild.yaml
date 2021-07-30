@@ -6,8 +6,37 @@ steps:
   args:
   - 'push'
   - 'gcr.io/$PROJECT_ID/sample-httpd:$SHORT_SHA'
+#retrieve key
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: retrieve-read-key
+  entrypoint: 'bash'
+  dir: ${_DIR}  
+  args:
+  - '-c'
+  - |
+    gcloud secrets versions access ${_KEY_VERSION} --secret="pf-test-git" --project=${_KEY_PROJECT}  > /root/.ssh/id_rsa;
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+# Set up git with key and domain.
+- name: 'gcr.io/cloud-builders/git'
+  id: add-github-key
+  entrypoint: 'bash'
+  dir: ${_DIR}
+  args:
+  - '-c'
+  - |
+    chmod 600 /root/.ssh/id_rsa
+    cat <<EOF >/root/.ssh/config
+    Hostname github.com
+    IdentityFile /root/.ssh/id_rsa
+    EOF
+    ssh-keyscan -t rsa github.com > /root/.ssh/known_hosts
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
   
-  # This step clones the hello-cloudbuild-env repository
+# This step clones the hello-cloudbuild-env repository
 - name: 'gcr.io/cloud-builders/gcloud'
   id: Clone env repository
   entrypoint: /bin/sh
@@ -45,3 +74,10 @@ steps:
     git status && \
     git commit -m "Deploying image gcr.io/${PROJECT_ID}/sample-httpd:${SHORT_SHA} Built from commit ${COMMIT_SHA} of repository PF-demo" && \
     git push
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+ substitutions:
+    _KEY_PROJECT: identity-pingfed-lab-ef24f2
+    _KEY_VERSION: "latest"
+    
