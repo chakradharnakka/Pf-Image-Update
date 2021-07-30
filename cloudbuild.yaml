@@ -38,8 +38,9 @@ steps:
   - '-c'
   - |
     set -x && \
+    git config user.email $(gcloud auth list --filter=status:ACTIVE --format='value(account)') && \
     cd Pf-demo && \
     git add k8s/ && \
     git status && \
     git commit -m "Deploying image gcr.io/${PROJECT_ID}/sample-httpd:${SHORT_SHA} Built from commit ${COMMIT_SHA} of repository PF-demo" && \
-    git push origin main
+    git push
