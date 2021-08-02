@@ -66,7 +66,7 @@ steps:
     path: /root/.ssh
 
 # This step pushes the manifest back
-- name: 'gcr.io/cloud-builders/git'
+- name: 'gcr.io/cloud-builders/gcloud'
   id: Push manifest
   entrypoint: /bin/sh
   args:
@@ -83,7 +83,6 @@ steps:
   volumes:
   - name: 'ssh'
     path: /root/.ssh
-    
  substitutions:
     _KEY_PROJECT: identity-pingfed-lab-ef24f2
     _KEY_VERSION: "latest"
