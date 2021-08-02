@@ -38,7 +38,7 @@ steps:
     path: /root/.ssh
   
 # This step clones the repository
-- name: 'gcr.io/cloud-builders/gcloud'
+- name: 'gcr.io/cloud-builders/git'
   id: Clone env repository
   entrypoint: /bin/sh
   args:
@@ -46,7 +46,7 @@ steps:
   - |
     git clone https://github.com/chakradharnakka/Pf-demo.git && \
     cd Pf-demo && \
-    git checkout main && \
+    git checkout main 
   volumes:
   - name: 'ssh'
     path: /root/.ssh
