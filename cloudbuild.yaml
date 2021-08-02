@@ -44,7 +44,7 @@ steps:
   args:
   - '-c'
   - |
-    git clone git@github.com:chakradharnakka/Pf-demo.git && \
+    git clone https://github.com/chakradharnakka/Pf-demo.git && \
     cd Pf-demo && \
     git checkout main && \
   volumes:
@@ -83,6 +83,7 @@ steps:
   volumes:
   - name: 'ssh'
     path: /root/.ssh
+    
  substitutions:
     _KEY_PROJECT: identity-pingfed-lab-ef24f2
     _KEY_VERSION: "latest"
