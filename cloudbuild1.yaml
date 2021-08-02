@@ -39,7 +39,7 @@ steps:
     path: /root/.ssh
   
 # This step clones the repository
-- name: 'gcr.io/cloud-builders/git'
+- name: 'gcr.io/cloud-builders/gcloud'
   id: Clone env repository
   entrypoint: /bin/sh
   args:
