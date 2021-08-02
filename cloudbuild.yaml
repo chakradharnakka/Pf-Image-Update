@@ -79,8 +79,7 @@ steps:
     git add k8s/ && \
     git status && \
     git commit -m "Deploying image gcr.io/${PROJECT_ID}/sample-httpd:${SHORT_SHA} Built from commit ${COMMIT_SHA} of repository PF-demo" && \
-    git remote add origin git@github.com:chakradharnakka/Pf-demo.git && \
-    git push set-upstream origin main
+    git push origin main
   volumes:
   - name: 'ssh'
     path: /root/.ssh
