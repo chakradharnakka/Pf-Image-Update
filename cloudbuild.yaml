@@ -47,6 +47,9 @@ steps:
     git clone git@github.com:chakradharnakka/Pf-demo.git && \
     cd Pf-demo && \
     git checkout main && \
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
 
 # This step generates the new manifest
 - name: 'gcr.io/cloud-builders/gcloud'
@@ -58,6 +61,9 @@ steps:
      set -x && \
      cd Pf-demo && \
      sed -i "s#pingidentity/pingfederate:edge#gcr.io/$PROJECT_ID/sample-httpd:$SHORT_SHA#g" k8s/PF-site1-sample_vitalii.yaml k8s/PF-site2-sample_vitalii.yaml
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
 
 # This step pushes the manifest back
 - name: 'gcr.io/cloud-builders/git'
