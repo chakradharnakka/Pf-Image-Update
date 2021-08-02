@@ -46,17 +46,18 @@ steps:
   - '-c'
   - |
     set -x
-    git config --global user.email chakradhar.nakka@telus.com
-    git config --global user.name "chakradharnakka" 
+    git config --global user.email chakradhar.nakka@telus.com && \
+    git config --global user.name "chakradharnakka" && \
     git clone https://github.com/chakradharnakka/Pf-demo.git && \
     git checkout main && \
+    ls && \
     cd Pf-demo && \
-    sed -i "s#pingidentity/pingfederate:edge#gcr.io/$PROJECT_ID/sample-httpd:$SHORT_SHA#g" k8s/PF-site1-sample_vitalii.yaml k8s/PF-site2-sample_vitalii.yaml
-    echo "Pushing changes to git repo ..."
+    sed -i "s#pingidentity/pingfederate:edge#gcr.io/$PROJECT_ID/sample-httpd:$SHORT_SHA#g" k8s/PF-site1-sample_vitalii.yaml k8s/PF-site2-sample_vitalii.yaml && \
+    echo "Pushing changes to git repo ..." && \
     git add k8s/ && \
     git status && \
     git commit -m "Deploying image gcr.io/${PROJECT_ID}/sample-httpd:${SHORT_SHA} Built from commit ${COMMIT_SHA} of repository PF-demo" && \
-    git push
+    git push origin main
   volumes:
   - name: 'ssh'
     path: /root/.ssh
