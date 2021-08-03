@@ -1,11 +1,11 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '--tag=gcr.io/$PROJECT_ID/sample-httpd:$SHORT_SHA', '.']
+  args: ['build', '--tag=gcr.io/$PROJECT_ID/sample-httpd:$TAG_NAME', '.']
 - name: 'gcr.io/cloud-builders/docker'
   id: Push
   args:
   - 'push'
-  - 'gcr.io/$PROJECT_ID/sample-httpd:$SHORT_SHA'
+  - 'gcr.io/$PROJECT_ID/sample-httpd:$TAG_NAME'
   
 #retrieve key
 - name: 'gcr.io/cloud-builders/gcloud'
@@ -39,7 +39,7 @@ steps:
   
 # This step clones the repository
 - name: 'gcr.io/cloud-builders/git'
-  id: Clone env repository
+  id: Clone repository
   entrypoint: /bin/sh
   args:
   - '-c'
@@ -53,14 +53,14 @@ steps:
 
 # This step generates the new manifest
 - name: 'gcr.io/cloud-builders/gcloud'
-  id: Generate manifest
+  id: Update manifest
   entrypoint: /bin/sh
   args:
   - '-c'
   - |
      set -x && \
      cd Pf-demo && \
-     sed -i "s#pingidentity/pingfederate:edge#gcr.io/$PROJECT_ID/sample-httpd:$SHORT_SHA#g" k8s/PF-site1-sample_vitalii.yaml k8s/PF-site2-sample_vitalii.yaml
+     sed -i "s/:v.*/:${TAG_NAME}/g" k8s/deployment.yaml
   volumes:
   - name: 'ssh'
     path: /root/.ssh
@@ -78,7 +78,7 @@ steps:
     cd Pf-demo && \
     git add k8s/ && \
     git status && \
-    git commit -m "Deploying image gcr.io/${PROJECT_ID}/sample-httpd:${SHORT_SHA} Built from commit ${COMMIT_SHA} of repository PF-demo" && \
+    git commit -m "Deploying image gcr.io/${PROJECT_ID}/sample-httpd:${TAG_NAME} Built from commit ${COMMIT_SHA} of repository PF-Image-update" && \
     git push origin main
   volumes:
   - name: 'ssh'
