@@ -44,7 +44,7 @@ steps:
   args:
   - '-c'
   - |
-    git clone git@github.com:chakradharnakka/Pf-demo.git && \
+    git clone git@github.com:telus/pingid-ci-cd-demo.git && \
     cd Pf-demo && \
     git checkout main 
   volumes:
