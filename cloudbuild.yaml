@@ -60,7 +60,7 @@ steps:
   - |
      set -x && \
      cd Pf-demo && \
-     sed -i "s/:v*/:${TAG_NAME}/g" k8s/PD-spin-test-east.yaml
+     sed -i "s/:v*/:${TAG_NAME}/g" k8s/PD-spin-test-east.yaml k8s/PD-spin-test-west.yaml
   volumes:
   - name: 'ssh'
     path: /root/.ssh
